@@ -13,7 +13,7 @@
 .message-thread {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 20px;
   /* Ensure content doesn't get hidden behind input bar */
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
@@ -140,7 +140,8 @@
   border-radius: 16px 16px 4px 16px;
   padding: 10px 14px;
   max-width: 80%;
-  font-size: 15px;
+  font-size: 13px;
+  letter-spacing: -0.01em;
   line-height: 1.5;
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -148,7 +149,8 @@
 
 .message--assistant {
   padding: 12px 0;
-  font-size: 15px;
+  font-size: 13px;
+  letter-spacing: -0.01em;
   line-height: 1.6;
 }
 
@@ -168,8 +170,8 @@
   margin: 12px 0 6px;
   color: var(--text-primary);
 }
-.message--assistant .message__content h2 { font-size: 16px; }
-.message--assistant .message__content h3 { font-size: 15px; }
+.message--assistant .message__content h2 { font-size: 14px; }
+.message--assistant .message__content h3 { font-size: 13px; }
 .message--assistant .message__content p { margin: 6px 0; }
 .message--assistant .message__content ul,
 .message--assistant .message__content ol {
@@ -317,4 +319,23 @@ body:has(.chat-view) {
 .header-action-btn:active {
   background: var(--bg-elevated);
   color: var(--text-primary);
+}
+
+/* ─── Desktop: constrain chat column width (centred, breathing room) ─── */
+
+@media (min-width: 768px) {
+  #app:has(.chat-view) .app-header {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px 20px;
+  }
+
+  .app-main:has(.chat-view) {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .message-thread {
+    padding: 24px;
+  }
 }
