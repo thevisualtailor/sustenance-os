@@ -217,6 +217,45 @@
 .thinking-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .thinking-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
+/* ─── New Message Chip ─── */
+
+.new-message-chip {
+  position: absolute;
+  bottom: 80px; /* above input bar */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  min-height: 36px;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+/* ─── Load More Button ─── */
+
+.load-more-btn {
+  display: block;
+  margin: 8px auto 16px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  cursor: pointer;
+  min-height: 32px;
+  min-width: auto;
+}
+
 /* ─── Full-bleed overrides: remove app shell constraints when chat is active ─── */
 
 #app:has(.chat-view) {
