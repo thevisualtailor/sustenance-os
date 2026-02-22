@@ -10,20 +10,20 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 3 of 4 (AI Coaching + OCR)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-22 — Completed 03-01-PLAN.md (Claude API client + session context + API key gate)
+Last activity: 2026-02-22 — Completed 03-02-PLAN.md (upload modal + XLSX parsing + image thumbnails)
 
-Progress: [██████░░░░] 55%
+Progress: [███████░░░] 64%
 
-(6 of ~11 total plans complete across all phases)
+(7 of ~11 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: ~4 min
-- Total execution time: ~15 min
+- Total plans completed: 5
+- Average duration: ~3 min
+- Total execution time: ~17 min
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [██████░░░░] 55%
 |-------|-------|-------|----------|
 | 01-foundation | 2 of 2 | ~11 min | ~6 min |
 | 02-chat-ui | 2 of 2 | ~3 min | ~3 min |
-| 03-ai-coaching-ocr | 1 of 4 | ~1 min | ~1 min |
+| 03-ai-coaching-ocr | 2 of 4 | ~3 min | ~1.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (6 min), 01-02 (5 min), 02-01 (3 min), 03-01 (1 min)
-- Trend: Accelerating — 03-01 fastest yet at 1 min
+- Last 5 plans: 01-02 (5 min), 02-01 (3 min), 02-02 (0 min), 03-01 (1 min), 03-02 (2 min)
+- Trend: Consistently fast — Phase 3 plans averaging ~1.5 min
 
 *Updated after each plan completion*
 
@@ -67,11 +67,16 @@ Recent decisions affecting current work:
 - Stub AI response (getStubResponse) in Phase 2 only — replaced by Claude Haiku API in Phase 3
 - CSS :has() for full-bleed overrides — #app:has(.chat-view) removes padding without JS class
 - dvh units for chat-view height — avoids iOS Safari 100vh toolbar clip bug
-- Feature module pattern: src/chat/{feature}.js + CSS co-located, CSS imported in JS
+- Feature module pattern: src/chat/{feature}.js + CSS co-loaded, CSS imported in JS
 - claude-haiku-4-5-20251001 model ID (not deprecated claude-3-haiku)
 - anthropic-dangerous-direct-browser-access header required for browser CORS preflight (direct browser fetch)
 - API key stored in localStorage key sustenance_anthropic_key
 - Overlay styles co-located in chat-view.css — not a separate file
+- SheetJS 0.20.3 installed via CDN tarball (npm install https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz) — not npm registry (outdated)
+- XLSX sheet names are 'Quick Export' and 'Food Log' (exact, with spaces) — verified from MacroFactor exports
+- File selection triggers immediate send — no separate confirm step (locked)
+- "Analyse this" auto-filled when file sent with empty textarea
+- createImageAttachment keeps File reference on attachment object — needed for Plan 03 base64 conversion
 
 ### Pending Todos
 
@@ -79,10 +84,10 @@ None
 
 ### Blockers/Concerns
 
-None — 03-01 complete. Ready for 03-02 (coaching system prompt wire-up).
+None — 03-02 complete. Ready for 03-03 (wire upload flow into real Claude API pipeline).
 
 ## Session Continuity
 
-Last session: 2026-02-22 17:13 UTC
-Stopped at: Completed 03-01-PLAN.md (Claude API client + session context + API key gate)
+Last session: 2026-02-22 17:15 UTC
+Stopped at: Completed 03-02-PLAN.md (upload modal + XLSX parsing + image thumbnails)
 Resume file: None
