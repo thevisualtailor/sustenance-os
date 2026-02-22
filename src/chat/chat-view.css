@@ -1,0 +1,191 @@
+/* ─── Chat View Layout ─── */
+
+.chat-view {
+  height: calc(100dvh - var(--header-height, 52px));
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Message Thread (scrollable area) ─── */
+
+.message-thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  /* Ensure content doesn't get hidden behind input bar */
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Chat Input Bar ─── */
+
+.chat-input {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: var(--bg);
+}
+
+.chat-input textarea {
+  flex: 1;
+  resize: none;
+  overflow-y: hidden;
+  min-height: 44px;
+  max-height: 96px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.chat-input textarea:focus {
+  border-color: var(--accent);
+}
+
+.chat-input textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.chat-input__send {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  min-width: 44px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 18px;
+  transition: opacity 0.15s ease;
+  padding: 0;
+}
+
+.chat-input__send:active {
+  opacity: 0.75;
+}
+
+/* ─── Empty State ─── */
+
+.chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 8px;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.4s ease;
+  /* Position in center of thread */
+  min-height: 200px;
+  padding: 32px 16px;
+}
+
+.chat-empty__title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text-primary);
+  opacity: 0.65;
+  letter-spacing: -0.01em;
+}
+
+.chat-empty__subtitle {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+  opacity: 0.4;
+  letter-spacing: 0.01em;
+}
+
+.chat-empty--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Message Bubbles ─── */
+
+.message {
+  padding: 8px 0;
+}
+
+.message--user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.message--user .message__content {
+  background: var(--bg-elevated);
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
+  max-width: 80%;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message--assistant {
+  padding: 12px 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.message--assistant .message__content {
+  color: var(--text-primary);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* ─── Thinking Indicator ─── */
+
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.thinking-indicator {
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+.thinking-indicator span {
+  animation: thinking-pulse 1.4s ease-in-out infinite;
+}
+
+.thinking-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ─── Full-bleed overrides: remove app shell constraints when chat is active ─── */
+
+#app:has(.chat-view) {
+  padding: 0;
+}
+
+.app-main:has(.chat-view) {
+  max-width: none;
+  padding: 0;
+}

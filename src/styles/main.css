@@ -43,6 +43,7 @@
   --font-heading: 'Geist', system-ui, -apple-system, sans-serif;
   --font-body: 'Roboto Mono', monospace;
   --bento-gap: 15px;
+  --header-height: 52px;
 }
 
 *,
