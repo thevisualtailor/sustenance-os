@@ -1,0 +1,137 @@
+/* ─── Geist Sans (Vercel) -- headings, self-hosted ─── */
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist/Geist-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist/Geist-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist/Geist-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist/Geist-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-elevated: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #888888;
+  --text-muted: #555555;
+  --accent: #4a9eff;
+  --border: #2a2a2a;
+  --success: #4ade80;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --font-heading: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-body: 'Roboto Mono', monospace;
+  --bento-gap: 15px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+#app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--bento-gap);
+}
+
+/* ─── Layout ─── */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--bento-gap);
+}
+
+.app-header h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.55rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  letter-spacing: -0.02em;
+}
+
+.app-main {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ─── Tap targets (Apple HIG) ─── */
+
+button,
+a,
+[role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ─── Placeholder content ─── */
+
+.app-placeholder {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.app-placeholder__title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.app-placeholder__subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ─── Responsive: reduce app padding on mobile ─── */
+@media (max-width: 480px) {
+  #app {
+    padding: var(--bento-gap);
+  }
+
+  .app-header {
+    margin-bottom: var(--bento-gap);
+  }
+}
