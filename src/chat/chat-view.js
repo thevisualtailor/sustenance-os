@@ -28,11 +28,11 @@ export function createChatView(container) {
 
   const emptyTitle = document.createElement('p');
   emptyTitle.className = 'chat-empty__title';
-  emptyTitle.textContent = 'SustenanceOS';
+  emptyTitle.textContent = 'F*ck Perfection.';
 
   const emptySubtitle = document.createElement('p');
   emptySubtitle.className = 'chat-empty__subtitle';
-  emptySubtitle.textContent = 'Persistent Imperfection';
+  emptySubtitle.textContent = 'Success comes from 70% every day, not perfect once a week.';
 
   emptyState.appendChild(emptyTitle);
   emptyState.appendChild(emptySubtitle);

@@ -89,18 +89,17 @@
 /* ─── Empty State ─── */
 
 .chat-empty {
+  min-height: 100%; /* fills thread height so justify-content: center works */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  gap: 8px;
+  gap: 12px;
   pointer-events: none;
   user-select: none;
   transition: opacity 0.4s ease;
-  /* Position in center of thread */
-  min-height: 200px;
-  padding: 32px 16px;
+  padding: 32px 24px;
+  text-align: center;
 }
 
 .chat-empty__title {
@@ -114,10 +113,12 @@
 
 .chat-empty__subtitle {
   font-family: 'Roboto Mono', monospace;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-primary);
   opacity: 0.4;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
+  max-width: 280px;
+  line-height: 1.6;
 }
 
 .chat-empty--hidden {
