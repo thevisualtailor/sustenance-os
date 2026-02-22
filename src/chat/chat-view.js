@@ -53,7 +53,7 @@ export function createChatView(container) {
   inputBar.className = 'chat-input';
 
   const textarea = document.createElement('textarea');
-  textarea.placeholder = "Let's make some progress...";
+  textarea.placeholder = "Let's chat...";
   textarea.rows = 1;
   textarea.setAttribute('aria-label', 'Message input');
 
