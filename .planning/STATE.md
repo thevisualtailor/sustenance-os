@@ -5,18 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Act as a BED-safe protective buffer between Jay and his nutrition data — coaching through fire meals and behavioral insight, never through numbers.
-**Current focus:** Phase 2 — Chat UI
+**Current focus:** Phase 3 — AI Coaching + OCR
 
 ## Current Position
 
-Phase: 2 of 4 (Chat UI)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-22 — Completed 02-01-PLAN.md (chat view layout, message store, stub send/receive loop)
+Phase: 3 of 4 (AI Coaching + OCR)
+Plan: 0 of 4 in current phase
+Status: Ready to plan
+Last activity: 2026-02-22 — Completed Phase 2 (Chat UI) — all plans verified on iPhone
 
-Progress: [███░░░░░░░] 30%
+Progress: [█████░░░░░] 50%
 
-(3 of ~10 total plans complete across all phases)
+(5 of ~10 total plans complete across all phases)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [███░░░░░░░] 30%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 2 of 2 | ~11 min | ~6 min |
-| 02-chat-ui | 1 of 2 | ~3 min | ~3 min |
+| 02-chat-ui | 2 of 2 | ~3 min | ~3 min |
 
 **Recent Trend:**
 - Last 5 plans: 01-01 (6 min), 01-02 (5 min), 02-01 (3 min)
@@ -74,12 +74,7 @@ None
 
 ### Blockers/Concerns
 
-None — Plan 02-01 complete. Plan 02-02 ready to execute.
-
-Plan 02-02 notes:
-- renderMessage() in chat-view.js is intentionally basic — Plan 02 replaces with message-renderer.js
-- scrollToBottom() always fires — Plan 02 adds "at bottom" detection and scroll chip
-- createMessageStore() and createChatView() exports are spec-compliant, ready to import
+None — Phase 2 complete. Ready to plan Phase 3.
 
 ## Session Continuity
 
