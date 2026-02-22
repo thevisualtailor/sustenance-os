@@ -8,7 +8,7 @@ Sustenance OS is built in four phases that each deliver a complete, testable cap
 
 - [x] **Phase 1: Foundation** - Vite project live on Vercel, installable as PWA on iPhone
 - [x] **Phase 2: Chat UI** - Claude-styled chat interface with Compound OS aesthetics and session history
-- [ ] **Phase 3: AI Coaching + OCR** - Screenshot upload, vision parsing, Sustenance persona, BED guardrails
+- [x] **Phase 3: AI Coaching + OCR** - Screenshot upload, vision parsing, Sustenance persona, BED guardrails
 - [ ] **Phase 4: Fire Meals** - Browseable database pre-seeded from fire-meals.md, addable via chat, referenced in coaching
 
 ## Phase Details
@@ -54,9 +54,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Claude API client, session context store, API key entry overlay
-- [ ] 03-02-PLAN.md — Upload modal (+button, Camera/Photos/Files), image thumbnails, XLSX parsing via SheetJS
-- [ ] 03-03-PLAN.md — Sustenance persona system prompt, tier pill rendering, full coaching pipeline wiring, iPhone verification
+- [x] 03-01-PLAN.md — Claude API client, session context store, API key entry overlay
+- [x] 03-02-PLAN.md — Upload modal (+button, Camera/Photos/Files), image thumbnails, XLSX parsing via SheetJS
+- [x] 03-03-PLAN.md — Sustenance persona system prompt, tier pill rendering, full coaching pipeline wiring, iPhone verification
 
 ### Phase 4: Fire Meals
 **Goal**: The fire meals database is a first-class part of the app — browseable, extendable via chat, and actively used by the coach when making suggestions
@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-22 |
 | 2. Chat UI | 2/2 | Complete | 2026-02-22 |
-| 3. AI Coaching + OCR | 0/3 | In progress | - |
+| 3. AI Coaching + OCR | 3/3 | Complete | 2026-02-22 |
 | 4. Fire Meals | 0/4 | Not started | - |
 
 ---

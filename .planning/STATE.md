@@ -10,20 +10,20 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 3 of 4 (AI Coaching + OCR)
-Plan: 2 of 4 in current phase
-Status: In progress
-Last activity: 2026-02-22 — Completed 03-02-PLAN.md (upload modal + XLSX parsing + image thumbnails)
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-02-22 — Completed Phase 3 (AI Coaching + OCR) — verified on iPhone
 
-Progress: [███████░░░] 64%
+Progress: [████████░░] 75%
 
-(7 of ~11 total plans complete across all phases)
+(8 of ~11 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~3 min
-- Total execution time: ~17 min
+- Total plans completed: 8
+- Average duration: ~6 min
+- Total execution time: ~47 min
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [███████░░░] 64%
 |-------|-------|-------|----------|
 | 01-foundation | 2 of 2 | ~11 min | ~6 min |
 | 02-chat-ui | 2 of 2 | ~3 min | ~3 min |
-| 03-ai-coaching-ocr | 2 of 4 | ~3 min | ~1.5 min |
+| 03-ai-coaching-ocr | 3 of 3 | ~33 min | ~11 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (5 min), 02-01 (3 min), 02-02 (0 min), 03-01 (1 min), 03-02 (2 min)
-- Trend: Consistently fast — Phase 3 plans averaging ~1.5 min
+- Last 5 plans: 02-02 (0 min), 03-01 (1 min), 03-02 (2 min), 03-03 (~30 min)
+- Trend: Phase 3 longer due to architectural decision (server-side proxy) and iPhone verification
 
 *Updated after each plan completion*
 
@@ -77,6 +77,10 @@ Recent decisions affecting current work:
 - File selection triggers immediate send — no separate confirm step (locked)
 - "Analyse this" auto-filled when file sent with empty textarea
 - createImageAttachment keeps File reference on attachment object — needed for Plan 03 base64 conversion
+- Server-side Anthropic proxy via api/chat.js — API key in Vercel env vars, not browser localStorage
+- ANTHROPIC_MODEL env var controls model (default: claude-haiku-4-5-20251001)
+- Two-call OCR pipeline: extract once via sendOcrExtraction, discard image from history, inject JSON into session context
+- Tier tokens [TIER:X] injected before DOMPurify sanitization so gradient spans survive the sanitizer pass
 
 ### Pending Todos
 
@@ -84,10 +88,10 @@ None
 
 ### Blockers/Concerns
 
-None — 03-02 complete. Ready for 03-03 (wire upload flow into real Claude API pipeline).
+None — Phase 3 complete. Ready for Phase 4 (Fire Meals).
 
 ## Session Continuity
 
-Last session: 2026-02-22 17:15 UTC
-Stopped at: Completed 03-02-PLAN.md (upload modal + XLSX parsing + image thumbnails)
+Last session: 2026-02-22
+Stopped at: Completed Phase 3 (AI Coaching + OCR) — all 3 plans verified
 Resume file: None
