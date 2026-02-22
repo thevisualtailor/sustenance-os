@@ -36,12 +36,11 @@ Plans:
   2. AI responses render markdown (bold, bullet lists, headers) correctly
   3. Earlier messages in the conversation remain visible by scrolling up
   4. Dark theme, palette, and typography match Compound OS visually
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 02-01: Chat bubble layout, message thread, scroll behaviour, input field
-- [ ] 02-02: Compound OS dark theme applied (colours, fonts, spacing), markdown renderer wired in
-- [ ] 02-03: Session history — in-memory message store, scroll-to-bottom on new message, scroll-up for history
+- [ ] 02-01-PLAN.md — Chat view layout, input bar, message store, stub AI response
+- [ ] 02-02-PLAN.md — Markdown rendering, scroll anchoring, iPhone verification
 
 ### Phase 3: AI Coaching + OCR
 **Goal**: The Sustenance persona is live — user can upload a MacroFactor screenshot, the AI reads it silently, and all coaching responses are BED-safe, trend-based, and actionable
@@ -84,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-22 |
-| 2. Chat UI | 0/3 | Not started | - |
+| 2. Chat UI | 0/2 | Not started | - |
 | 3. AI Coaching + OCR | 0/4 | Not started | - |
 | 4. Fire Meals | 0/4 | Not started | - |
 
