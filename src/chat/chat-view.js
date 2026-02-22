@@ -18,8 +18,8 @@ import { setOcrData, setXlsxData, getContextBlock, clearSession } from './sessio
 export function createChatView(container) {
   const store = createMessageStore();
 
-  // Pending attachment set when user selects a file from the upload modal
-  let pendingAttachment = null;
+  // Pending attachments — array of { url, file } objects, max 5
+  let pendingAttachments = []; // array of { url, file } objects, max 5
 
   // Conversation history in Anthropic API format — separate from UI store
   let conversationHistory = [];
@@ -48,6 +48,10 @@ export function createChatView(container) {
   emptyState.appendChild(emptySubtitle);
   thread.appendChild(emptyState);
 
+  // ─── Attachment Preview Strip ───
+  const previewStrip = document.createElement('div');
+  previewStrip.className = 'chat-input__previews';
+
   // ─── Input Bar ───
   const inputBar = document.createElement('div');
   inputBar.className = 'chat-input';
@@ -71,7 +75,11 @@ export function createChatView(container) {
     textarea.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        handleSend();
+        if (pendingAttachments.length > 0) {
+          handleSendWithImages();
+        } else {
+          handleSend();
+        }
       }
       // Shift+Enter falls through to default textarea behaviour (newline)
     });
@@ -90,12 +98,12 @@ export function createChatView(container) {
   // Upload modal (created once, reused)
   const uploadModal = createUploadModal({
     onImage: (file) => {
-      pendingAttachment = { type: 'image', file };
-      handleSendWithAttachment();
+      addPendingImage(file);
+      // Does NOT auto-send — user taps send when ready
     },
     onFile: (file) => {
-      pendingAttachment = { type: 'xlsx', file };
-      handleSendWithAttachment();
+      // XLSX still sends immediately (single file, different flow)
+      handleSendWithXlsx(file);
     },
     onDismiss: () => {},
   });
@@ -111,7 +119,8 @@ export function createChatView(container) {
     '</svg>';
   // Send button is NEVER disabled (locked decision)
 
-  // Layout: [+] [textarea] [send]
+  // Layout: [previews strip] [+] [textarea] [send]
+  inputBar.appendChild(previewStrip);
   inputBar.appendChild(attachBtn);
   inputBar.appendChild(textarea);
   inputBar.appendChild(sendBtn);
@@ -233,6 +242,58 @@ export function createChatView(container) {
     scrollAnchor.onNewMessage();
   }
 
+  // ─── Pending Attachment Helpers ───
+
+  function addPendingImage(file) {
+    if (pendingAttachments.length >= 5) return;
+    const url = URL.createObjectURL(file);
+    pendingAttachments.push({ url, file });
+    renderPreviewStrip();
+  }
+
+  function removePendingImage(index) {
+    URL.revokeObjectURL(pendingAttachments[index].url);
+    pendingAttachments.splice(index, 1);
+    renderPreviewStrip();
+  }
+
+  function clearPendingImages() {
+    pendingAttachments.forEach(a => URL.revokeObjectURL(a.url));
+    pendingAttachments = [];
+    renderPreviewStrip();
+  }
+
+  function renderPreviewStrip() {
+    previewStrip.innerHTML = '';
+    if (pendingAttachments.length === 0) {
+      previewStrip.className = 'chat-input__previews';
+      return;
+    }
+    previewStrip.className = 'chat-input__previews chat-input__previews--visible';
+    pendingAttachments.forEach((att, i) => {
+      const item = document.createElement('div');
+      item.className = 'chat-input__preview-item';
+
+      const img = document.createElement('img');
+      img.className = 'chat-input__preview-thumb';
+      img.src = att.url;
+      img.alt = 'Attachment ' + (i + 1);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'chat-input__preview-remove';
+      removeBtn.setAttribute('aria-label', 'Remove attachment');
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        removePendingImage(i);
+      });
+
+      item.appendChild(img);
+      item.appendChild(removeBtn);
+      previewStrip.appendChild(item);
+    });
+  }
+
   // Case A: Text-only message
   async function handleSend() {
     const text = textarea.value.trim();
@@ -273,48 +334,41 @@ export function createChatView(container) {
     }
   }
 
-  sendBtn.addEventListener('click', handleSend);
+  sendBtn.addEventListener('click', () => {
+    if (pendingAttachments.length > 0) {
+      handleSendWithImages();
+    } else {
+      handleSend();
+    }
+  });
 
   // ─── Attachment Send Logic ───
 
-  /**
-   * Called immediately when a file is selected from the upload modal.
-   * Uses pendingAttachment. Auto-fills "Analyse this" if textarea is empty.
-   * Handles Case B (image) and Case C (xlsx).
-   */
-  async function handleSendWithAttachment() {
-    if (!pendingAttachment) return;
+  // Case B: Image attachment(s) — two-call OCR pipeline
+  async function handleSendWithImages() {
+    if (pendingAttachments.length === 0) return;
     if (isThinking) return;
 
-    const attachment = pendingAttachment;
-    pendingAttachment = null;
-
-    // Use textarea text if present, otherwise auto-generate prompt
+    const attachments = [...pendingAttachments];
     const text = textarea.value.trim() || 'Analyse this';
 
-    // Clear input
+    // Clear input + previews
     textarea.value = '';
     textarea.style.height = 'auto';
     textarea.style.overflowY = 'hidden';
+    clearPendingImages();
 
-    // Build attachment object for the message store
-    let attachmentObj = null;
-    if (attachment.type === 'image') {
-      attachmentObj = createImageAttachment(attachment.file);
-    } else if (attachment.type === 'xlsx') {
-      try {
-        attachmentObj = await createXlsxAttachment(attachment.file);
-      } catch (err) {
-        console.error('Failed to parse XLSX:', err);
-        attachmentObj = { type: 'xlsx', filename: attachment.file.name, data: null };
-      }
+    // Build attachment object for the message store (use first image for thumbnail)
+    const attachmentObj = createImageAttachment(attachments[0].file);
+    // For multiple images, store all URLs on the attachment object
+    if (attachments.length > 1) {
+      attachmentObj.extraUrls = attachments.slice(1).map(a => URL.createObjectURL(a.file));
     }
 
     // Add user message with attachment to store + render
     const userMsg = store.addMessage('user', text, attachmentObj);
     thread.appendChild(renderMessage(userMsg));
 
-    // Fade out empty state on first message
     if (store.getMessages().length === 1) {
       emptyState.classList.add('chat-empty--hidden');
     }
@@ -324,87 +378,102 @@ export function createChatView(container) {
     isThinking = true;
     const indicator = renderThinkingIndicator();
 
-    // ─── Case B: Image attachment — two-call OCR pipeline ───
-    if (attachment.type === 'image') {
+    try {
+      // OCR extraction: convert all images to base64, send in one call
+      const imagePayloads = await Promise.all(
+        attachments.map(async (att) => ({
+          base64: await fileToBase64(att.file),
+          mediaType: att.file.type,
+        }))
+      );
+
+      let ocrText;
       try {
-        // Step 1: OCR extraction call (hidden — result never rendered in thread)
-        const base64 = await fileToBase64(attachment.file);
-        let ocrText;
-        try {
-          ocrText = await sendOcrExtraction({ base64, mediaType: attachment.file.type });
-        } catch (ocrErr) {
-          console.error('OCR extraction error:', ocrErr);
-          indicator.remove();
-          handleApiError("I had trouble reading that image. Could you try again?");
-          return;
-        }
-
-        // Parse OCR JSON and store in session context
-        try {
-          const ocrResult = JSON.parse(ocrText);
-          setOcrData(ocrResult);
-        } catch (parseErr) {
-          console.warn('OCR result was not valid JSON, storing raw:', parseErr);
-          setOcrData({ raw: ocrText });
-        }
-
-        // Step 2: Add to conversation history with placeholder (don't re-send image)
-        conversationHistory.push({
-          role: 'user',
-          content: text + '\n[MacroFactor screenshot analysed — nutrition data stored in session context]',
-        });
-
-        // Step 3: Coaching response call with updated context (now includes OCR data)
-        const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
-        const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
+        ocrText = await sendOcrExtraction(imagePayloads);
+      } catch (ocrErr) {
+        console.error('OCR extraction error:', ocrErr);
         indicator.remove();
-        handleAssistantResponse(responseText);
-      } catch (err) {
-        indicator.remove();
-        console.error('Image pipeline error:', err);
-        handleApiError('Something went wrong — please check your API key and try again.');
-      } finally {
-        isThinking = false;
+        handleApiError("I had trouble reading that image. Could you try again?");
+        return;
       }
-      return;
+
+      try {
+        const ocrResult = JSON.parse(ocrText);
+        setOcrData(ocrResult);
+      } catch (parseErr) {
+        console.warn('OCR result was not valid JSON, storing raw:', parseErr);
+        setOcrData({ raw: ocrText });
+      }
+
+      conversationHistory.push({
+        role: 'user',
+        content: text + '\n[MacroFactor screenshot(s) analysed — nutrition data stored in session context]',
+      });
+
+      const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
+      const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
+      indicator.remove();
+      handleAssistantResponse(responseText);
+    } catch (err) {
+      indicator.remove();
+      console.error('Image pipeline error:', err);
+      handleApiError('Something went wrong — please check your API key and try again.');
+    } finally {
+      isThinking = false;
+    }
+  }
+
+  // Case C: XLSX attachment — immediate send
+  async function handleSendWithXlsx(file) {
+    if (isThinking) return;
+
+    const text = textarea.value.trim() || 'Analyse this';
+
+    textarea.value = '';
+    textarea.style.height = 'auto';
+    textarea.style.overflowY = 'hidden';
+
+    let attachmentObj = null;
+    try {
+      attachmentObj = await createXlsxAttachment(file);
+    } catch (err) {
+      console.error('Failed to parse XLSX:', err);
+      attachmentObj = { type: 'xlsx', filename: file.name, data: null };
     }
 
-    // ─── Case C: XLSX attachment ───
-    if (attachment.type === 'xlsx') {
-      try {
-        // Store parsed XLSX data in session context
-        if (attachmentObj && attachmentObj.data) {
-          setXlsxData(attachmentObj.data);
-        }
+    const userMsg = store.addMessage('user', text, attachmentObj);
+    thread.appendChild(renderMessage(userMsg));
 
-        // Add to conversation history with placeholder
-        conversationHistory.push({
-          role: 'user',
-          content:
-            text +
-            '\n[MacroFactor XLSX uploaded: ' +
-            (attachmentObj ? attachmentObj.filename : attachment.file.name) +
-            ' — data stored in session context]',
-        });
-
-        // Coaching response call with updated context (now includes XLSX data)
-        const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
-        const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
-        indicator.remove();
-        handleAssistantResponse(responseText);
-      } catch (err) {
-        indicator.remove();
-        console.error('XLSX pipeline error:', err);
-        handleApiError('Something went wrong — please check your API key and try again.');
-      } finally {
-        isThinking = false;
-      }
-      return;
+    if (store.getMessages().length === 1) {
+      emptyState.classList.add('chat-empty--hidden');
     }
 
-    // Fallback: unknown attachment type
-    indicator.remove();
-    isThinking = false;
+    scrollAnchor.onNewMessage();
+
+    isThinking = true;
+    const indicator = renderThinkingIndicator();
+
+    try {
+      if (attachmentObj && attachmentObj.data) {
+        setXlsxData(attachmentObj.data);
+      }
+
+      conversationHistory.push({
+        role: 'user',
+        content: text + '\n[MacroFactor XLSX uploaded: ' + (attachmentObj ? attachmentObj.filename : file.name) + ' — data stored in session context]',
+      });
+
+      const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
+      const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
+      indicator.remove();
+      handleAssistantResponse(responseText);
+    } catch (err) {
+      indicator.remove();
+      console.error('XLSX pipeline error:', err);
+      handleApiError('Something went wrong — please check your API key and try again.');
+    } finally {
+      isThinking = false;
+    }
   }
 
   // ─── Render Helpers ───

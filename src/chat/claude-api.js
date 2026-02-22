@@ -22,11 +22,12 @@ export async function sendMessage({ systemPrompt, messages }) {
 
 /* ─── OCR Extraction Call ─── */
 
-export async function sendOcrExtraction({ base64, mediaType }) {
+// images: array of { base64, mediaType } — supports 1–5 screenshots
+export async function sendOcrExtraction(images) {
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ type: 'ocr', base64, mediaType }),
+    body: JSON.stringify({ type: 'ocr', images }),
   });
 
   if (!response.ok) {
