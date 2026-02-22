@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 
 Phase: 1 of 4 (Foundation)
 Plan: 2 of 2 in current phase
-Status: In progress — awaiting checkpoint approval (Task 3: iPhone home screen verification)
-Last activity: 2026-02-22 — Executed 01-02-PLAN.md tasks 1 and 2 (PWA configuration and deploy)
+Status: Phase complete
+Last activity: 2026-02-22 — Completed 01-02-PLAN.md (PWA shell verified on iPhone)
 
 Progress: [██░░░░░░░░] 20%
 
@@ -57,17 +57,19 @@ Recent decisions affecting current work:
 - vite-plugin-pwa generateSW mode — zero boilerplate, Workbox handles precaching automatically
 - PNG icons generated via Node.js zlib (scripts/generate-icons.js) — ImageMagick not available on dev machine
 - apple-mobile-web-app-status-bar-style: black-translucent — status bar blends with dark background
+- generateSW strategy (vite-plugin-pwa) — Workbox handles all SW edge cases, zero boilerplate
+- apple-touch-icon link required in index.html — iOS ignores manifest icons array
 
 ### Pending Todos
 
-- Task 3 (01-02): iPhone home screen verification checkpoint — awaiting user approval
+None
 
 ### Blockers/Concerns
 
-- None blocking technical progress. Task 3 requires physical iPhone test before Phase 1 is fully signed off.
+None — Phase 1 complete, all success criteria verified on real device.
 
 ## Session Continuity
 
 Last session: 2026-02-22 03:10 UTC
-Stopped at: Task 3 checkpoint (01-02-PLAN.md) — awaiting iPhone home screen verification
+Stopped at: Phase 1 complete — both plans executed, iPhone verified, ready for Phase 2
 Resume file: None

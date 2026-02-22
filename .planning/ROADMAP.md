@@ -6,7 +6,7 @@ Sustenance OS is built in four phases that each deliver a complete, testable cap
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** - Vite project live on Vercel, installable as PWA on iPhone
+- [x] **Phase 1: Foundation** - Vite project live on Vercel, installable as PWA on iPhone
 - [ ] **Phase 2: Chat UI** - Claude-styled chat interface with Compound OS aesthetics and session history
 - [ ] **Phase 3: AI Coaching + OCR** - Screenshot upload, vision parsing, Sustenance persona, BED guardrails
 - [ ] **Phase 4: Fire Meals** - Browseable database pre-seeded from fire-meals.md, addable via chat, referenced in coaching
@@ -24,8 +24,8 @@ Sustenance OS is built in four phases that each deliver a complete, testable cap
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold Vite project from Compound OS, push to GitHub, deploy to Vercel
-- [ ] 01-02-PLAN.md — PWA manifest, service worker, iPhone meta tags, home screen verification
+- [x] 01-01-PLAN.md — Scaffold Vite project from Compound OS, push to GitHub, deploy to Vercel
+- [x] 01-02-PLAN.md — PWA manifest, service worker, iPhone meta tags, home screen verification
 
 ### Phase 2: Chat UI
 **Goal**: The chat interface feels like a polished coaching tool — visually consistent with Compound OS and capable of rendering rich AI responses
@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Planned | - |
+| 1. Foundation | 2/2 | Complete | 2026-02-22 |
 | 2. Chat UI | 0/3 | Not started | - |
 | 3. AI Coaching + OCR | 0/4 | Not started | - |
 | 4. Fire Meals | 0/4 | Not started | - |
