@@ -4,10 +4,13 @@
  * Empty state branding fades out on first message.
  */
 import './chat-view.css';
-import { createMessageStore, getStubResponse, createImageAttachment, createXlsxAttachment } from './message-store.js';
+import { createMessageStore, createImageAttachment, createXlsxAttachment } from './message-store.js';
 import { renderMessage } from './message-renderer.js';
 import { createScrollAnchor } from './scroll-anchor.js';
 import { createUploadModal } from './upload-modal.js';
+import { sendMessage, sendOcrExtraction, fileToBase64 } from './claude-api.js';
+import { buildSustenancePersonaPrompt } from './sustenance-persona.js';
+import { setOcrData, setXlsxData, getContextBlock, clearSession } from './session-context.js';
 
 /**
  * @param {HTMLElement} container — the .app-main element from createAppShell
@@ -17,6 +20,9 @@ export function createChatView(container) {
 
   // Pending attachment set when user selects a file from the upload modal
   let pendingAttachment = null;
+
+  // Conversation history in Anthropic API format — separate from UI store
+  let conversationHistory = [];
 
   // ─── Root wrapper ───
   const chatView = document.createElement('div');
@@ -141,6 +147,9 @@ export function createChatView(container) {
       '</svg>';
     newConvoBtn.addEventListener('click', () => {
       store.clear();
+      // Clear conversation history and session context
+      conversationHistory = [];
+      clearSession();
       // Remove all thread children except emptyState (first child)
       while (thread.children.length > 1) {
         thread.removeChild(thread.lastChild);
@@ -197,10 +206,38 @@ export function createChatView(container) {
   // ─── Send Logic ───
   let isThinking = false;
 
+  /**
+   * Shared post-response handler: renders assistant message, updates history, manages load-more.
+   */
+  function handleAssistantResponse(responseText) {
+    const assistantMsg = store.addMessage('assistant', responseText);
+    thread.appendChild(renderMessage(assistantMsg));
+    conversationHistory.push({ role: 'assistant', content: responseText });
+    scrollAnchor.onNewMessage();
+
+    if (store.hasMore(50)) {
+      const existing = thread.querySelector('.load-more-btn');
+      if (!existing) {
+        const btn = renderLoadMoreBtn();
+        thread.insertBefore(btn, thread.children[1]); // after emptyState
+      }
+    }
+  }
+
+  /**
+   * Shared error handler: shows a graceful error message as an assistant message.
+   */
+  function handleApiError(errorMsg) {
+    const errMsg = store.addMessage('assistant', errorMsg);
+    thread.appendChild(renderMessage(errMsg));
+    scrollAnchor.onNewMessage();
+  }
+
+  // Case A: Text-only message
   async function handleSend() {
     const text = textarea.value.trim();
     if (!text) return;
-    if (isThinking) return; // Prevent double-send during stub delay
+    if (isThinking) return;
 
     // Clear input immediately
     textarea.value = '';
@@ -210,39 +247,27 @@ export function createChatView(container) {
     // Add user message to store + render
     const userMsg = store.addMessage('user', text);
     thread.appendChild(renderMessage(userMsg));
+    conversationHistory.push({ role: 'user', content: text });
 
     // Fade out empty state on first message
     if (store.getMessages().length === 1) {
       emptyState.classList.add('chat-empty--hidden');
     }
 
-    // Notify scroll anchor (will auto-scroll since we're at bottom)
     scrollAnchor.onNewMessage();
 
-    // Show thinking indicator
     isThinking = true;
     const indicator = renderThinkingIndicator();
 
     try {
-      const response = await getStubResponse();
-      // Remove thinking indicator
+      const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
+      const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
       indicator.remove();
-
-      // Add AI message to store + render
-      const assistantMsg = store.addMessage('assistant', response);
-      thread.appendChild(renderMessage(assistantMsg));
-
-      // Notify scroll anchor (auto-scroll if at bottom, chip if scrolled up)
-      scrollAnchor.onNewMessage();
-
-      // Add load-more button if message history exceeds visible window
-      if (store.hasMore(50)) {
-        const existing = thread.querySelector('.load-more-btn');
-        if (!existing) {
-          const btn = renderLoadMoreBtn();
-          thread.insertBefore(btn, thread.children[1]); // after emptyState
-        }
-      }
+      handleAssistantResponse(responseText);
+    } catch (err) {
+      indicator.remove();
+      console.error('sendMessage error:', err);
+      handleApiError('Something went wrong — please check your API key and try again.');
     } finally {
       isThinking = false;
     }
@@ -255,6 +280,7 @@ export function createChatView(container) {
   /**
    * Called immediately when a file is selected from the upload modal.
    * Uses pendingAttachment. Auto-fills "Analyse this" if textarea is empty.
+   * Handles Case B (image) and Case C (xlsx).
    */
   async function handleSendWithAttachment() {
     if (!pendingAttachment) return;
@@ -295,28 +321,90 @@ export function createChatView(container) {
 
     scrollAnchor.onNewMessage();
 
-    // Stub AI response (replaced in Plan 03 with real pipeline)
     isThinking = true;
     const indicator = renderThinkingIndicator();
 
-    try {
-      const response = await getStubResponse();
-      indicator.remove();
-
-      const assistantMsg = store.addMessage('assistant', response);
-      thread.appendChild(renderMessage(assistantMsg));
-      scrollAnchor.onNewMessage();
-
-      if (store.hasMore(50)) {
-        const existing = thread.querySelector('.load-more-btn');
-        if (!existing) {
-          const btn = renderLoadMoreBtn();
-          thread.insertBefore(btn, thread.children[1]);
+    // ─── Case B: Image attachment — two-call OCR pipeline ───
+    if (attachment.type === 'image') {
+      try {
+        // Step 1: OCR extraction call (hidden — result never rendered in thread)
+        const base64 = await fileToBase64(attachment.file);
+        let ocrText;
+        try {
+          ocrText = await sendOcrExtraction({ base64, mediaType: attachment.file.type });
+        } catch (ocrErr) {
+          console.error('OCR extraction error:', ocrErr);
+          indicator.remove();
+          handleApiError("I had trouble reading that image. Could you try again?");
+          return;
         }
+
+        // Parse OCR JSON and store in session context
+        try {
+          const ocrResult = JSON.parse(ocrText);
+          setOcrData(ocrResult);
+        } catch (parseErr) {
+          console.warn('OCR result was not valid JSON, storing raw:', parseErr);
+          setOcrData({ raw: ocrText });
+        }
+
+        // Step 2: Add to conversation history with placeholder (don't re-send image)
+        conversationHistory.push({
+          role: 'user',
+          content: text + '\n[MacroFactor screenshot analysed — nutrition data stored in session context]',
+        });
+
+        // Step 3: Coaching response call with updated context (now includes OCR data)
+        const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
+        const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
+        indicator.remove();
+        handleAssistantResponse(responseText);
+      } catch (err) {
+        indicator.remove();
+        console.error('Image pipeline error:', err);
+        handleApiError('Something went wrong — please check your API key and try again.');
+      } finally {
+        isThinking = false;
       }
-    } finally {
-      isThinking = false;
+      return;
     }
+
+    // ─── Case C: XLSX attachment ───
+    if (attachment.type === 'xlsx') {
+      try {
+        // Store parsed XLSX data in session context
+        if (attachmentObj && attachmentObj.data) {
+          setXlsxData(attachmentObj.data);
+        }
+
+        // Add to conversation history with placeholder
+        conversationHistory.push({
+          role: 'user',
+          content:
+            text +
+            '\n[MacroFactor XLSX uploaded: ' +
+            (attachmentObj ? attachmentObj.filename : attachment.file.name) +
+            ' — data stored in session context]',
+        });
+
+        // Coaching response call with updated context (now includes XLSX data)
+        const systemPrompt = buildSustenancePersonaPrompt(getContextBlock());
+        const responseText = await sendMessage({ systemPrompt, messages: conversationHistory });
+        indicator.remove();
+        handleAssistantResponse(responseText);
+      } catch (err) {
+        indicator.remove();
+        console.error('XLSX pipeline error:', err);
+        handleApiError('Something went wrong — please check your API key and try again.');
+      } finally {
+        isThinking = false;
+      }
+      return;
+    }
+
+    // Fallback: unknown attachment type
+    indicator.remove();
+    isThinking = false;
   }
 
   // ─── Render Helpers ───
