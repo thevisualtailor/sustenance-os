@@ -7,9 +7,9 @@
 
 ### App Shell
 
-- [ ] **APP-01**: App deploys to Vercel via GitHub with a production URL
-- [ ] **APP-02**: App is installable as a PWA on iPhone home screen (full-screen, no browser chrome)
-- [ ] **APP-03**: Mobile-first responsive layout (iPhone primary, usable on desktop)
+- [x] **APP-01**: App deploys to Vercel via GitHub with a production URL
+- [x] **APP-02**: App is installable as a PWA on iPhone home screen (full-screen, no browser chrome)
+- [x] **APP-03**: Mobile-first responsive layout (iPhone primary, usable on desktop)
 
 ### Chat Interface
 
@@ -65,9 +65,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| APP-01 | Phase 1 | Pending |
-| APP-02 | Phase 1 | Pending |
-| APP-03 | Phase 1 | Pending |
+| APP-01 | Phase 1 | Complete |
+| APP-02 | Phase 1 | Complete |
+| APP-03 | Phase 1 | Complete |
 | CHAT-01 | Phase 2 | Pending |
 | CHAT-02 | Phase 2 | Pending |
 | CHAT-03 | Phase 2 | Pending |
