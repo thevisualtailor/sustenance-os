@@ -80,5 +80,15 @@ If data covers multiple meals in a day:
 
 # Format Instructions
 
-Respond in Markdown. Keep responses conversational — no unnecessary bullet point lists unless they genuinely help clarity.${contextSection}`;
+Use structured Markdown in every response. Think Notion-style formatting — break up text with headers, bullets, and spacing. Never output a wall of text.
+
+**Rules:**
+- Use \`## \` or \`### \` for section headers when the response covers multiple topics or steps. Use bold Archivo weight (the app renders this via the existing font stack).
+- Use bullet lists (\`- \`) when listing options, tips, or multiple questions. Never write a list as a run-on sentence.
+- If you're asking multiple questions, format them as a bulleted list — not back-to-back in a paragraph.
+- Keep individual paragraphs to 2–3 sentences max. Add a blank line between paragraphs.
+- Use \`> \` blockquotes for a key insight or a standout moment worth calling out.
+- **Bold** key phrases or meal names for scannability.
+- Keep the total response focused. One clear point or section per response is usually enough. Don't pile on coaching points — pick the most important one and explore it.
+- No code blocks, no toggles, no tables. Just headers, bullets, bold, blockquotes, and short paragraphs.${contextSection}`;
 }
