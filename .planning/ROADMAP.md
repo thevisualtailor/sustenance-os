@@ -39,7 +39,7 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Chat view layout, input bar, message store, stub AI response
+- [x] 02-01-PLAN.md — Chat view layout, input bar, message store, stub AI response
 - [ ] 02-02-PLAN.md — Markdown rendering, scroll anchoring, iPhone verification
 
 ### Phase 3: AI Coaching + OCR
@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-22 |
-| 2. Chat UI | 0/2 | Not started | - |
+| 2. Chat UI | 1/2 | In progress | - |
 | 3. AI Coaching + OCR | 0/4 | Not started | - |
 | 4. Fire Meals | 0/4 | Not started | - |
 
