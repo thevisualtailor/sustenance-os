@@ -1,7 +1,7 @@
 /* ─── Chat View Layout ─── */
 
 .chat-view {
-  height: calc(100dvh - var(--header-height, 52px));
+  height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -67,8 +67,8 @@
   height: 44px;
   min-height: 44px;
   min-width: 44px;
-  background: var(--text-primary);
-  color: var(--bg);
+  background: #333;
+  color: var(--text-primary);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -256,20 +256,65 @@
   min-width: auto;
 }
 
-/* ─── Full-bleed overrides: remove app shell constraints when chat is active ─── */
+/* ─── Full-bleed overrides: flex height chain when chat is active ───
+   Proper iOS keyboard fix: propagate 100% height from html → body → #app → .app-main → .chat-view.
+   calc(100dvh) is unreliable on iOS Safari when the keyboard is open — this chain is not.
+   ──────────────────────────────────────────────────────────────────────────────────────── */
+
+html:has(.chat-view),
+body:has(.chat-view) {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
 
 #app:has(.chat-view) {
+  height: 100%;
+  max-width: none;
+  margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#app:has(.chat-view) .app-header {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  margin-bottom: 0;
 }
 
 .app-main:has(.chat-view) {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   max-width: none;
   padding: 0;
+  margin: 0;
 }
 
-/* Remove body safe-area bottom padding when chat is active —
-   chat-input already handles it via padding-bottom: calc(12px + env(safe-area-inset-bottom)).
-   Without this override, iOS Safari shows a gap between the input bar and the keyboard. */
-body:has(.chat-view) {
-  padding-bottom: 0;
+/* ─── Header action buttons (history, new conversation) ─── */
+
+.header-action-btn {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  min-width: 44px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.header-action-btn:active {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
 }

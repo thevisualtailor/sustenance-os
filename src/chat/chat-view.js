@@ -72,6 +72,42 @@ export function createChatView(container) {
   chatView.appendChild(inputBar);
   container.appendChild(chatView);
 
+  // ─── Header Buttons ───
+  // History (left, visual-only — session persistence in Phase 3)
+  // New Conversation (right, functional — clears thread and store)
+  const appHeader = container.parentElement && container.parentElement.querySelector('.app-header');
+  if (appHeader) {
+    const historyBtn = document.createElement('button');
+    historyBtn.className = 'header-action-btn';
+    historyBtn.setAttribute('aria-label', 'Conversation history');
+    historyBtn.innerHTML =
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+      '<line x1="4" y1="7" x2="20" y2="7"/>' +
+      '<line x1="4" y1="12" x2="20" y2="12"/>' +
+      '<line x1="4" y1="17" x2="20" y2="17"/>' +
+      '</svg>';
+    appHeader.insertBefore(historyBtn, appHeader.firstChild);
+
+    const newConvoBtn = document.createElement('button');
+    newConvoBtn.className = 'header-action-btn';
+    newConvoBtn.setAttribute('aria-label', 'New conversation');
+    newConvoBtn.innerHTML =
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>' +
+      '<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>' +
+      '</svg>';
+    newConvoBtn.addEventListener('click', () => {
+      store.clear();
+      // Remove all thread children except emptyState (first child)
+      while (thread.children.length > 1) {
+        thread.removeChild(thread.lastChild);
+      }
+      emptyState.classList.remove('chat-empty--hidden');
+      loadOffset = 1;
+    });
+    appHeader.appendChild(newConvoBtn);
+  }
+
   // ─── Scroll Anchor ───
   // Instantiated after thread is in the DOM
   const scrollAnchor = createScrollAnchor(thread);

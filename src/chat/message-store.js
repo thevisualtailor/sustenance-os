@@ -62,6 +62,11 @@ export function createMessageStore() {
       const start = Math.max(0, end - n);
       return messages.slice(start, end);
     },
+
+    /** Clears all messages (new conversation reset). */
+    clear() {
+      messages.length = 0;
+    },
   };
 }
 
