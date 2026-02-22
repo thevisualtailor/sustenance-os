@@ -155,7 +155,45 @@
 .message--assistant .message__content {
   color: var(--text-primary);
   word-wrap: break-word;
-  white-space: pre-wrap;
+  /* pre-wrap removed: marked generates block elements, pre-wrap breaks list rendering */
+}
+
+/* ─── Markdown rendering styles (AI messages only) ─── */
+
+.message--assistant .message__content h1,
+.message--assistant .message__content h2,
+.message--assistant .message__content h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  margin: 12px 0 6px;
+  color: var(--text-primary);
+}
+.message--assistant .message__content h2 { font-size: 16px; }
+.message--assistant .message__content h3 { font-size: 15px; }
+.message--assistant .message__content p { margin: 6px 0; }
+.message--assistant .message__content ul,
+.message--assistant .message__content ol {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+.message--assistant .message__content li { margin: 3px 0; }
+.message--assistant .message__content strong { color: var(--text-primary); font-weight: 600; }
+.message--assistant .message__content code {
+  background: var(--bg-surface);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+/* ─── Timestamp (AI messages only) ─── */
+
+.message__timestamp {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-family: var(--font-body);
 }
 
 /* ─── Thinking Indicator ─── */

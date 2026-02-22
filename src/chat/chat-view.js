@@ -5,6 +5,8 @@
  */
 import './chat-view.css';
 import { createMessageStore, getStubResponse } from './message-store.js';
+import { renderMessage } from './message-renderer.js';
+import { createScrollAnchor } from './scroll-anchor.js';
 
 /**
  * @param {HTMLElement} container — the .app-main element from createAppShell
@@ -70,6 +72,49 @@ export function createChatView(container) {
   chatView.appendChild(inputBar);
   container.appendChild(chatView);
 
+  // ─── Scroll Anchor ───
+  // Instantiated after thread is in the DOM
+  const scrollAnchor = createScrollAnchor(thread);
+
+  // ─── Load More Control ───
+  let loadOffset = 1; // tracks how many older pages have been loaded
+
+  function renderLoadMoreBtn() {
+    const btn = document.createElement('button');
+    btn.className = 'load-more-btn';
+    btn.textContent = 'Load earlier messages';
+    btn.addEventListener('click', () => {
+      const olderMessages = store.getOlder(50, loadOffset + 1);
+      loadOffset++;
+
+      // Preserve scroll position when prepending
+      const prevScrollHeight = thread.scrollHeight;
+
+      // Remove existing load-more button
+      btn.remove();
+
+      // Prepend older messages (in chronological order)
+      const fragment = document.createDocumentFragment();
+      olderMessages.forEach((msg) => {
+        fragment.appendChild(renderMessage(msg));
+      });
+
+      // Insert after emptyState (or at very top if no empty state)
+      const firstChild = thread.firstChild;
+      thread.insertBefore(fragment, firstChild ? firstChild.nextSibling : null);
+
+      // Restore scroll position so user stays at same visual point
+      thread.scrollTop = thread.scrollTop + (thread.scrollHeight - prevScrollHeight);
+
+      // If there are even older messages, add another button
+      if (store.hasMore(50 * loadOffset)) {
+        const nextBtn = renderLoadMoreBtn();
+        thread.insertBefore(nextBtn, thread.children[1]); // after emptyState
+      }
+    });
+    return btn;
+  }
+
   // ─── Send Logic ───
   let isThinking = false;
 
@@ -84,16 +129,16 @@ export function createChatView(container) {
     textarea.style.overflowY = 'hidden';
 
     // Add user message to store + render
-    store.addMessage('user', text);
-    renderMessage('user', text);
+    const userMsg = store.addMessage('user', text);
+    thread.appendChild(renderMessage(userMsg));
 
     // Fade out empty state on first message
     if (store.getMessages().length === 1) {
       emptyState.classList.add('chat-empty--hidden');
     }
 
-    // Scroll to bottom
-    scrollToBottom();
+    // Notify scroll anchor (will auto-scroll since we're at bottom)
+    scrollAnchor.onNewMessage();
 
     // Show thinking indicator
     isThinking = true;
@@ -105,9 +150,20 @@ export function createChatView(container) {
       indicator.remove();
 
       // Add AI message to store + render
-      store.addMessage('assistant', response);
-      renderMessage('assistant', response);
-      scrollToBottom();
+      const assistantMsg = store.addMessage('assistant', response);
+      thread.appendChild(renderMessage(assistantMsg));
+
+      // Notify scroll anchor (auto-scroll if at bottom, chip if scrolled up)
+      scrollAnchor.onNewMessage();
+
+      // Add load-more button if message history exceeds visible window
+      if (store.hasMore(50)) {
+        const existing = thread.querySelector('.load-more-btn');
+        if (!existing) {
+          const btn = renderLoadMoreBtn();
+          thread.insertBefore(btn, thread.children[1]); // after emptyState
+        }
+      }
     } finally {
       isThinking = false;
     }
@@ -117,47 +173,13 @@ export function createChatView(container) {
 
   // ─── Render Helpers ───
 
-  function renderMessage(role, content) {
-    const wrapper = document.createElement('div');
-    wrapper.className = `message message--${role}`;
-
-    const contentEl = document.createElement('div');
-    contentEl.className = 'message__content';
-
-    if (role === 'user') {
-      // Plain text for user messages — safe
-      contentEl.textContent = content;
-    } else {
-      // Raw text for assistant — Plan 02 will replace with markdown parsing
-      contentEl.innerHTML = escapeHtmlPreserveNewlines(content);
-    }
-
-    wrapper.appendChild(contentEl);
-    thread.appendChild(wrapper);
-    return wrapper;
-  }
-
   function renderThinkingIndicator() {
     const indicator = document.createElement('div');
     indicator.className = 'thinking-indicator';
     indicator.innerHTML = 'Thinking<span>.</span><span>.</span><span>.</span>';
     thread.appendChild(indicator);
-    scrollToBottom();
+    scrollAnchor.onNewMessage();
     return indicator;
-  }
-
-  function scrollToBottom() {
-    thread.scrollTop = thread.scrollHeight;
-  }
-
-  // Minimal escape: converts markdown-ish text to readable HTML for stub responses
-  // Plan 02 replaces this with a proper markdown renderer
-  function escapeHtmlPreserveNewlines(text) {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>');
   }
 
   return { chatView, thread };
