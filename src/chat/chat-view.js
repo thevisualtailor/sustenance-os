@@ -55,8 +55,17 @@ export function createChatView(container) {
     textarea.style.overflowY = textarea.scrollHeight > 96 ? 'scroll' : 'hidden';
   });
 
-  // Enter key adds newline — do NOT send on Enter (locked decision)
-  // Default textarea behavior already handles this; no interception needed.
+  // Desktop only: Enter sends, Shift+Enter inserts newline.
+  // Mobile keyboards have unreliable keydown behaviour so we skip it there.
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    textarea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+      // Shift+Enter falls through to default textarea behaviour (newline)
+    });
+  }
 
   const sendBtn = document.createElement('button');
   sendBtn.className = 'chat-input__send';
