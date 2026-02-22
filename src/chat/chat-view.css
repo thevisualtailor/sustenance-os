@@ -45,7 +45,7 @@
   border-radius: 12px;
   padding: 10px 14px;
   font-family: var(--font-body);
-  font-size: 16px; /* 16px minimum prevents iOS Safari auto-zoom on focus */
+  font-size: 13px; /* matches message text */
   letter-spacing: -0.01em;
   line-height: 1.5;
   box-sizing: border-box;
@@ -126,6 +126,12 @@
 .chat-empty--hidden {
   opacity: 0;
   pointer-events: none;
+  /* Collapse layout space so messages don't render below an invisible empty state */
+  min-height: 0;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  gap: 0;
 }
 
 /* ─── Message Bubbles ─── */
@@ -324,6 +330,14 @@ body:has(.chat-view) {
 .header-action-btn:active {
   background: var(--bg-elevated);
   color: var(--text-primary);
+}
+
+/* ─── Touch devices: bump textarea to 16px to prevent iOS Safari auto-zoom on focus ─── */
+
+@media (pointer: coarse) {
+  .chat-input textarea {
+    font-size: 16px;
+  }
 }
 
 /* ─── Desktop: constrain chat column width (centred, breathing room) ─── */
