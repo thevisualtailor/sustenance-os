@@ -10,20 +10,20 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 3 of 4 (AI Coaching + OCR)
-Plan: 0 of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-02-22 — Completed Phase 2 (Chat UI) — all plans verified on iPhone
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-22 — Completed 03-01-PLAN.md (Claude API client + session context + API key gate)
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 55%
 
-(5 of ~10 total plans complete across all phases)
+(6 of ~11 total plans complete across all phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~5 min
-- Total execution time: ~14 min
+- Total plans completed: 4
+- Average duration: ~4 min
+- Total execution time: ~15 min
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [█████░░░░░] 50%
 |-------|-------|-------|----------|
 | 01-foundation | 2 of 2 | ~11 min | ~6 min |
 | 02-chat-ui | 2 of 2 | ~3 min | ~3 min |
+| 03-ai-coaching-ocr | 1 of 4 | ~1 min | ~1 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (6 min), 01-02 (5 min), 02-01 (3 min)
-- Trend: Accelerating — 02-01 fastest yet at 3 min
+- Last 5 plans: 01-01 (6 min), 01-02 (5 min), 02-01 (3 min), 03-01 (1 min)
+- Trend: Accelerating — 03-01 fastest yet at 1 min
 
 *Updated after each plan completion*
 
@@ -67,6 +68,10 @@ Recent decisions affecting current work:
 - CSS :has() for full-bleed overrides — #app:has(.chat-view) removes padding without JS class
 - dvh units for chat-view height — avoids iOS Safari 100vh toolbar clip bug
 - Feature module pattern: src/chat/{feature}.js + CSS co-located, CSS imported in JS
+- claude-haiku-4-5-20251001 model ID (not deprecated claude-3-haiku)
+- anthropic-dangerous-direct-browser-access header required for browser CORS preflight (direct browser fetch)
+- API key stored in localStorage key sustenance_anthropic_key
+- Overlay styles co-located in chat-view.css — not a separate file
 
 ### Pending Todos
 
@@ -74,10 +79,10 @@ None
 
 ### Blockers/Concerns
 
-None — Phase 2 complete. Ready to plan Phase 3.
+None — 03-01 complete. Ready for 03-02 (coaching system prompt wire-up).
 
 ## Session Continuity
 
-Last session: 2026-02-22 12:45 UTC
-Stopped at: Completed 02-01-PLAN.md (chat view layout + message store)
+Last session: 2026-02-22 17:13 UTC
+Stopped at: Completed 03-01-PLAN.md (Claude API client + session context + API key gate)
 Resume file: None
