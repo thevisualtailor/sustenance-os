@@ -339,6 +339,79 @@ body:has(.chat-view) {
   }
 }
 
+/* ─── API Key Overlay (gates chat on first load) ─── */
+
+.api-key-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.api-key-overlay h2 {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.api-key-overlay p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 300px;
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.api-key-overlay input {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-family: var(--font-body);
+  width: 100%;
+  max-width: 300px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.api-key-overlay input:focus {
+  border-color: var(--text-secondary);
+}
+
+.api-key-overlay button {
+  width: auto;
+  padding: 10px 24px;
+  border-radius: 12px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  background: #333;
+  color: var(--text-primary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.api-key-overlay button:active {
+  opacity: 0.75;
+}
+
 /* ─── Desktop: constrain chat column width (centred, breathing room) ─── */
 
 @media (min-width: 768px) {
