@@ -51,13 +51,12 @@ Plans:
   2. Coach refers to trends and patterns ("you've been fuelling well this week") never exact figures
   3. When a meal is mentioned, the coach offers Gold/Silver/Bronze improvement suggestions
   4. Coach asks a contextual follow-up when an eating pattern is detected in the conversation
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 03-01: Screenshot upload UI — camera-roll picker, image preview, attach-to-session flow
-- [ ] 03-02: Claude Vision OCR — send image to Haiku, extract intake data, store in session context (never render to UI)
-- [ ] 03-03: Sustenance persona system prompt — BED guardrails, trend language, fire-meal coaching mode, Gold/Silver/Bronze tier logic
-- [ ] 03-04: Coaching API integration — message pipeline, context injection (OCR data + persona), contextual follow-up detection
+- [ ] 03-01-PLAN.md — Claude API client, session context store, API key entry overlay
+- [ ] 03-02-PLAN.md — Upload modal (+button, Camera/Photos/Files), image thumbnails, XLSX parsing via SheetJS
+- [ ] 03-03-PLAN.md — Sustenance persona system prompt, tier pill rendering, full coaching pipeline wiring, iPhone verification
 
 ### Phase 4: Fire Meals
 **Goal**: The fire meals database is a first-class part of the app — browseable, extendable via chat, and actively used by the coach when making suggestions
@@ -78,13 +77,13 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-02-22 |
 | 2. Chat UI | 2/2 | Complete | 2026-02-22 |
-| 3. AI Coaching + OCR | 0/4 | Not started | - |
+| 3. AI Coaching + OCR | 0/3 | In progress | - |
 | 4. Fire Meals | 0/4 | Not started | - |
 
 ---
