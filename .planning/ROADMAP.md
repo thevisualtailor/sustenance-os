@@ -21,11 +21,11 @@ Sustenance OS is built in four phases that each deliver a complete, testable cap
   1. User can open the app from the iPhone home screen with no browser chrome visible
   2. App loads on Vercel production URL and is reachable from any device
   3. Layout is mobile-first and finger-friendly — no horizontal scrolling, no tiny tap targets
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 01-01: Vite project scaffolded from Compound OS reference, GitHub repo, Vercel deploy pipeline
-- [ ] 01-02: PWA manifest, service worker, and home screen meta tags configured for iPhone full-screen
+- [ ] 01-01-PLAN.md — Scaffold Vite project from Compound OS, push to GitHub, deploy to Vercel
+- [ ] 01-02-PLAN.md — PWA manifest, service worker, iPhone meta tags, home screen verification
 
 ### Phase 2: Chat UI
 **Goal**: The chat interface feels like a polished coaching tool — visually consistent with Compound OS and capable of rendering rich AI responses
@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | - |
+| 1. Foundation | 0/2 | Planned | - |
 | 2. Chat UI | 0/3 | Not started | - |
 | 3. AI Coaching + OCR | 0/4 | Not started | - |
 | 4. Fire Meals | 0/4 | Not started | - |
