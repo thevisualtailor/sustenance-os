@@ -4,15 +4,19 @@
  * Empty state branding fades out on first message.
  */
 import './chat-view.css';
-import { createMessageStore, getStubResponse } from './message-store.js';
+import { createMessageStore, getStubResponse, createImageAttachment, createXlsxAttachment } from './message-store.js';
 import { renderMessage } from './message-renderer.js';
 import { createScrollAnchor } from './scroll-anchor.js';
+import { createUploadModal } from './upload-modal.js';
 
 /**
  * @param {HTMLElement} container — the .app-main element from createAppShell
  */
 export function createChatView(container) {
   const store = createMessageStore();
+
+  // Pending attachment set when user selects a file from the upload modal
+  let pendingAttachment = null;
 
   // ─── Root wrapper ───
   const chatView = document.createElement('div');
@@ -67,6 +71,31 @@ export function createChatView(container) {
     });
   }
 
+  // ─── Attach (+) Button ───
+  const attachBtn = document.createElement('button');
+  attachBtn.className = 'chat-input__attach';
+  attachBtn.setAttribute('aria-label', 'Add attachment');
+  attachBtn.innerHTML =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">' +
+    '<line x1="12" y1="5" x2="12" y2="19"/>' +
+    '<line x1="5" y1="12" x2="19" y2="12"/>' +
+    '</svg>';
+
+  // Upload modal (created once, reused)
+  const uploadModal = createUploadModal({
+    onImage: (file) => {
+      pendingAttachment = { type: 'image', file };
+      handleSendWithAttachment();
+    },
+    onFile: (file) => {
+      pendingAttachment = { type: 'xlsx', file };
+      handleSendWithAttachment();
+    },
+    onDismiss: () => {},
+  });
+
+  attachBtn.addEventListener('click', () => uploadModal.open());
+
   const sendBtn = document.createElement('button');
   sendBtn.className = 'chat-input__send';
   sendBtn.setAttribute('aria-label', 'Send message');
@@ -76,6 +105,8 @@ export function createChatView(container) {
     '</svg>';
   // Send button is NEVER disabled (locked decision)
 
+  // Layout: [+] [textarea] [send]
+  inputBar.appendChild(attachBtn);
   inputBar.appendChild(textarea);
   inputBar.appendChild(sendBtn);
 
@@ -218,6 +249,75 @@ export function createChatView(container) {
   }
 
   sendBtn.addEventListener('click', handleSend);
+
+  // ─── Attachment Send Logic ───
+
+  /**
+   * Called immediately when a file is selected from the upload modal.
+   * Uses pendingAttachment. Auto-fills "Analyse this" if textarea is empty.
+   */
+  async function handleSendWithAttachment() {
+    if (!pendingAttachment) return;
+    if (isThinking) return;
+
+    const attachment = pendingAttachment;
+    pendingAttachment = null;
+
+    // Use textarea text if present, otherwise auto-generate prompt
+    const text = textarea.value.trim() || 'Analyse this';
+
+    // Clear input
+    textarea.value = '';
+    textarea.style.height = 'auto';
+    textarea.style.overflowY = 'hidden';
+
+    // Build attachment object for the message store
+    let attachmentObj = null;
+    if (attachment.type === 'image') {
+      attachmentObj = createImageAttachment(attachment.file);
+    } else if (attachment.type === 'xlsx') {
+      try {
+        attachmentObj = await createXlsxAttachment(attachment.file);
+      } catch (err) {
+        console.error('Failed to parse XLSX:', err);
+        attachmentObj = { type: 'xlsx', filename: attachment.file.name, data: null };
+      }
+    }
+
+    // Add user message with attachment to store + render
+    const userMsg = store.addMessage('user', text, attachmentObj);
+    thread.appendChild(renderMessage(userMsg));
+
+    // Fade out empty state on first message
+    if (store.getMessages().length === 1) {
+      emptyState.classList.add('chat-empty--hidden');
+    }
+
+    scrollAnchor.onNewMessage();
+
+    // Stub AI response (replaced in Plan 03 with real pipeline)
+    isThinking = true;
+    const indicator = renderThinkingIndicator();
+
+    try {
+      const response = await getStubResponse();
+      indicator.remove();
+
+      const assistantMsg = store.addMessage('assistant', response);
+      thread.appendChild(renderMessage(assistantMsg));
+      scrollAnchor.onNewMessage();
+
+      if (store.hasMore(50)) {
+        const existing = thread.querySelector('.load-more-btn');
+        if (!existing) {
+          const btn = renderLoadMoreBtn();
+          thread.insertBefore(btn, thread.children[1]);
+        }
+      }
+    } finally {
+      isThinking = false;
+    }
+  }
 
   // ─── Render Helpers ───
 
