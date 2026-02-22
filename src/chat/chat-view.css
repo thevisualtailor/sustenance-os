@@ -457,6 +457,52 @@ body:has(.chat-view) {
   opacity: 0.75;
 }
 
+/* ─── Tier Pills ─── */
+
+.tier-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  vertical-align: baseline;
+  margin: 0 2px;
+}
+
+.tier-pill--gold {
+  background: linear-gradient(135deg, #b8860b, #ffd700, #b8860b);
+  color: #1a1a1a;
+}
+
+.tier-pill--silver {
+  background: linear-gradient(135deg, #808080, #c0c0c0, #808080);
+  color: #1a1a1a;
+}
+
+.tier-pill--bronze {
+  background: linear-gradient(135deg, #8b4513, #cd7f32, #8b4513);
+  color: #fff;
+}
+
+.tier-pill--showing-up {
+  background: linear-gradient(135deg, #2d5a27, #4caf50, #2d5a27);
+  color: #fff;
+}
+
+.tier-pill--off-track {
+  background: linear-gradient(135deg, #8b6914, #f5a623, #8b6914);
+  color: #1a1a1a;
+}
+
+/* ─── Thinking indicator styling for message--thinking variant ─── */
+
+.message--thinking .message__content {
+  opacity: 0.5;
+  font-style: italic;
+}
+
 /* ─── Desktop: constrain chat column width (centred, breathing room) ─── */
 
 @media (min-width: 768px) {

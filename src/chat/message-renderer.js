@@ -1,12 +1,46 @@
 /**
  * Message Renderer — Sustenance OS
  * Converts a message object into a DOM element.
- * AI messages: markdown via marked, sanitized via DOMPurify.
+ * AI messages: markdown via marked, tier pills injected, sanitized via DOMPurify.
  * User messages: plain text (no innerHTML, XSS-safe by construction).
  * Attachments: image thumbnails or xlsx file badges rendered above text.
  */
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+
+/**
+ * Tier configuration: maps [TIER:KEY] tokens to label and CSS class.
+ */
+const TIER_CONFIG = {
+  GOLD: { label: 'Gold Tier', cssClass: 'tier-pill tier-pill--gold' },
+  SILVER: { label: 'Silver Tier', cssClass: 'tier-pill tier-pill--silver' },
+  BRONZE: { label: 'Bronze Tier', cssClass: 'tier-pill tier-pill--bronze' },
+  SHOWING_UP: { label: 'Showing Up', cssClass: 'tier-pill tier-pill--showing-up' },
+  OFF_TRACK: { label: 'Off Track', cssClass: 'tier-pill tier-pill--off-track' },
+};
+
+/**
+ * DOMPurify config — allow tier pill spans through sanitization.
+ * Tier pill HTML is injected BEFORE sanitize so DOMPurify validates it.
+ */
+const CLEAN_CONFIG = {
+  ALLOWED_TAGS: ['p', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'code', 'pre', 'br', 'span', 'a', 'blockquote'],
+  ALLOWED_ATTR: ['class', 'href'],
+};
+
+/**
+ * Replaces [TIER:KEY] tokens with styled span elements.
+ * Called BEFORE DOMPurify.sanitize so the HTML is validated.
+ * @param {string} html
+ * @returns {string}
+ */
+function injectTierPills(html) {
+  return html.replace(/\[TIER:([A-Z_]+)\]/g, (match, key) => {
+    const tier = TIER_CONFIG[key];
+    if (!tier) return match; // Unknown tier — leave as-is
+    return `<span class="${tier.cssClass}">${tier.label}</span>`;
+  });
+}
 
 /**
  * Renders a message object as a DOM element.
@@ -35,9 +69,13 @@ export function renderMessage(message) {
     textEl.textContent = content;
     contentEl.appendChild(textEl);
   } else {
-    // AI response: markdown parsed by marked, sanitized by DOMPurify
-    // DOMPurify.sanitize is the ONLY place innerHTML is used with AI content
-    contentEl.innerHTML = DOMPurify.sanitize(marked.parse(content));
+    // AI response pipeline:
+    // 1. marked.parse — markdown to HTML
+    // 2. injectTierPills — replace [TIER:X] tokens with styled spans
+    // 3. DOMPurify.sanitize — validate and clean (tier pill spans are in ALLOWED_TAGS)
+    const rawHtml = marked.parse(content);
+    const withPills = injectTierPills(rawHtml);
+    contentEl.innerHTML = DOMPurify.sanitize(withPills, CLEAN_CONFIG);
 
     // Timestamp on AI messages only (locked decision)
     const timestampEl = document.createElement('span');
